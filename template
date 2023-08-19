@@ -7,6 +7,7 @@
     <link href="https://cdn.bootcss.com/font-awesome/4.4.0/css/font-awesome.min.css" rel="stylesheet">
     <link href="https://cdn.bootcss.com/animate.css/3.5.2/animate.min.css" rel="stylesheet">
     <link href="https://cdn.bootcss.com/chosen/1.8.2/chosen.css" rel="stylesheet">
+	<script src="data.js"></script>
     <base target="_blank">
     <style type="text/css">
         h1, h2, h3, h4, h5, h6 {
@@ -6989,50 +6990,42 @@
                 <div class="ibox-content">
                     <div class="row">
                         <div class="col-sm-6 b-r" style="height:350px">
-                            <form class="form-horizontal">
-                                <div class="form-group">
-                                    <label class="col-sm-2 control-label text-navy">用例名称:</label>
-                                    <div class="col-sm-5">
-                                        <span class="form-control" id="testName"></span>
-                                    </div>
-                                </div>
-                                <div class="form-group">
-                                    <label class="col-sm-2 control-label text-navy">用例总数:</label>
-                                    <div class="col-sm-5">
-                                        <span class="form-control" id="testAll"></span>
-                                    </div>
-                                </div>
-                                <div class="form-group">
-                                    <label class="col-sm-2 control-label text-navy">用例通过:</label>
-                                    <div class="col-sm-5">
-                                        <span class="form-control" id="testPass"></span>
-                                    </div>
-                                </div>
-                                <div class="form-group">
-                                    <label class="col-sm-2 control-label text-danger">用例失败:</label>
-                                    <div class="col-sm-5">
-                                        <span class="form-control text-danger" id="testFail"></span>
-                                    </div>
-                                </div>
-                                <div class="form-group">
-                                    <label class="col-sm-2 control-label text-warning">用例跳过:</label>
-                                    <div class="col-sm-5">
-                                        <span class="form-control text-warning" id="testSkip"></span>
-                                    </div>
-                                </div>
-                                <div class="form-group">
-                                    <label class="col-sm-2 control-label text-navy">开始时间:</label>
-                                    <div class="col-sm-5">
-                                        <span class="form-control" id="beginTime"></span>
-                                    </div>
-                                </div>
-                                <div class="form-group">
-                                    <label class="col-sm-2 control-label text-navy">运行时间:</label>
-                                    <div class="col-sm-5">
-                                        <span class="form-control" id="totalTime"></span>
-                                    </div>
-                                </div>
-                            </form>
+						<table class="table table-hover">
+							  <tbody>
+								<tr>
+								  <td class="text-primary">用例名称:</td>
+								  <td><span id="testName"></span></td>
+								</tr>
+								<tr>
+								  <td class="text-primary">通过率:</td>
+								  <td><span id="testPassRate"></span></td>
+								</tr>
+								<tr>
+								  <td class="text-primary">用例总数:</td>
+								  <td><span id="testAll"></span></td>
+								</tr>
+								<tr>
+								  <td class="control-label text-primary">用例通过:</td>
+								  <td><span class="text-navy" id="testPass"></span></td>
+								</tr>
+								<tr>
+								  <td class="control-label text-primary">用例失败:</td>
+								  <td><span class="text-danger" id="testFail"></span></td>
+								</tr>
+								<tr>
+								  <td class="control-label text-primary">用例跳过:</td>
+								  <td><span class="text-warning" id="testSkip"></span></td>
+								</tr>
+								<tr>
+								  <td class="control-label text-primary">开始时间:</td>
+								  <td><span id="beginTime"></span></td>
+								</tr>
+								<tr>
+								  <td class="control-label text-primary">运行时间:</td>
+								  <td><<span id="totalTime"></span></td>
+								</tr>
+							  </tbody>
+							</table>
                         </div>
                         <div class="col-sm-6">
                             <div style="height:350px" id="echarts-map-chart"></div>
@@ -7134,7 +7127,7 @@
 	}
 </script>
 <script type="text/javascript">
-    var resultData = ${resultData};
+    var resultData = getData();
 
     function clickRow(obj){
         $("#detailBody").children("tr").attr("style","font-family: Consolas");
@@ -7143,7 +7136,7 @@
 
     function details(obj) {
         if ($(obj).text() == '展开') {
-            var len = $(obj).parent().parent().children().length;
+            var len = $(obj).parent().parent().children().length - 2;
             var detailLog = "";
             var logs = resultData["testResult"][parseInt($(obj).attr("buttonIndex"))]["log"];
             $(obj).text("收缩");
@@ -7152,7 +7145,7 @@
             $.each(logs, function (i, n) {
                 detailLog = detailLog + "<p>" + n + "</p>";
             });
-            $(obj).parent().parent().after("<tr><td colspan='" + len + "'><div style='font-family: Consolas;font-size:12px;overflow-x:auto;'>" + detailLog + "</div></td></tr>");
+            $(obj).parent().parent().after("<tr><td colspan='" + len + "'><div style='font-family: Consolas;font-size:12px;overflow-x:auto;'>" + detailLog + "</div></td><td width='30%' padding='0'><img src=\"template.png\"  width='30%' /></td><td></td></tr>");
         } else if ($(obj).text() == '收缩') {
             $(obj).parent().parent().next().remove();
             $(obj).text("展开");
@@ -7166,6 +7159,7 @@
         $("#testPass").text(resultData["testPass"]);
         $("#testFail").text(resultData["testFail"]);
         $("#testSkip").text(resultData["testSkip"]);
+        $("#testPassRate").text((parseFloat(resultData["testPass"])/parseFloat(resultData["testAll"]) * 100).toFixed(2) + '%');
         $("#testAll").text(resultData["testAll"]);
         $("#beginTime").text(resultData["beginTime"]);
         $("#totalTime").text(resultData["totalTime"]);
@@ -7264,6 +7258,7 @@
                     left: 'left',
                     data: ['失败', '跳过', '成功']
                 },
+				color:['#ef6567', '#f9c956','#3BA272'],
                 series: [
                     {
                         name: '运行结果',
